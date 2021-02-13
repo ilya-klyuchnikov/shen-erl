@@ -81,7 +81,7 @@ load_funs() ->
 compile_kl([{Mod, Ast} | Rest], Opts) ->
   io:format(standard_error, "COMPILING ~p~n", [Mod]),
   case shen_erl_kl_codegen:compile(Mod, Ast, ok) of
-    {ok, Mod, Bin} ->
+    {ok, Mod, Bin, Forms} ->
       case write(Mod, Bin, Opts) of
         ok -> compile_kl(Rest, Opts);
         {error, Reason} -> {error, Reason}

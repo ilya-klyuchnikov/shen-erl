@@ -16,6 +16,7 @@
 
 %% Types
 -type form() :: erl_syntax:syntaxTree().
+-type aforms() :: [erl_parse:abstract_form()].
 
 -record(code, {signatures :: [form()],
                forms :: [form()],
@@ -33,11 +34,11 @@ load_defuns(Mod, ToplevelDefs) ->
 
 -spec eval(shen_erl_kl_parse:kl_tree()) -> term().
 eval(ToplevelDef) ->
-  {ok, Mod, Bin} = compile(ToplevelDef),
+  {ok, Mod, Bin, _Form} = compile(ToplevelDef),
   {module, Mod} = code:load_binary(Mod, [], Bin),
   Mod:kl_tle().
 
--spec compile(shen_erl_kl_parse:kl_tree()) -> {ok, module(), binary()} |
+-spec compile(shen_erl_kl_parse:kl_tree()) -> {ok, module(), binary(), aforms} |
                                               {error, binary()}.
 compile(ToplevelDef = [defun, Name, Args, _Body]) ->
   Mod = modname(Name),
@@ -46,7 +47,7 @@ compile(ToplevelDef = [defun, Name, Args, _Body]) ->
 compile(ToplevelDef) ->
   compile(rand_modname(32, []), [ToplevelDef], ok).
 
--spec compile(module(), shen_erl_kl_parse:kl_tree(), atom()) -> {ok, binary()} |
+-spec compile(module(), shen_erl_kl_parse:kl_tree(), atom()) -> {ok, binary(), aforms} |
                                                                 {error, binary()}.
 compile(Mod, ToplevelDefs, DefaultTle) ->
   compile_toplevel(Mod, ToplevelDefs, #code{signatures = [],
@@ -89,8 +90,9 @@ compile_toplevel(Mod, [], #code{signatures = Sigs, forms = Forms, tles = Tles}) 
   TleFunction = erl_syntax:function(erl_syntax:atom(kl_tle), [TleClause]),
   TleForm = erl_syntax:revert(TleFunction),
 
-  case compile:forms([ModForm, ExportForm, TleForm | Forms]) of
-    {ok, Mod, Bin} -> {ok, Mod, Bin};
+  ErlForms = [ModForm, ExportForm, TleForm | Forms],
+  case compile:forms(ErlForms) of
+    {ok, Mod, Bin} -> {ok, Mod, Bin, ErlForms};
     SomethingElse -> {error, SomethingElse}
   end.
 

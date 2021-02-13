@@ -82,7 +82,7 @@ compile_kl([{Mod, Ast} | Rest], Opts) ->
   io:format(standard_error, "COMPILING ~p~n", [Mod]),
   case shen_erl_kl_codegen:compile(Mod, Ast, ok) of
     {ok, Mod, Bin, Forms} ->
-      case write(Mod, Bin, Opts) of
+      case write(Mod, Bin, Forms, Opts) of
         ok -> compile_kl(Rest, Opts);
         {error, Reason} -> {error, Reason}
       end;
@@ -112,10 +112,19 @@ parse_kl_file(Filename) ->
     {error, Reason} -> {error, Reason}
   end.
 
-write(Mod, BeamCode, Opts) ->
+write(Mod, BeamCode, Forms, Opts) ->
   {ok, CurrentDir} = file:get_cwd(),
   OutputDir = proplists:get_value(output_dir, Opts, CurrentDir),
   case file:write_file(OutputDir ++ "/" ++ atom_to_list(Mod) ++ ".beam", BeamCode) of
-    ok -> ok;
+    ok -> write_forms(Mod, Forms, Opts);
     {error, Reason} -> {error, Reason}
   end.
+
+write_forms(Mod, Forms, Opts) ->
+    CodeGenDir = proplists:get_value(srcgen_dir, Opts, undefined),
+    case CodeGenDir of
+        undefined -> ok;
+        _ ->
+            Text = [erl_pp:form(F) ++ "\n" || F <- Forms],
+            file:write_file(CodeGenDir ++ "/" ++ atom_to_list(Mod) ++ ".erl", Text)
+    end.

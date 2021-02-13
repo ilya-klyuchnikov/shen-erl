@@ -74,7 +74,8 @@ parser:
 .PHONY: shen-kl
 shen-kl: $(EXE)
 	@$(INSTALL_DIR) $(EBINDIR)
-	SHEN_ERL_ROOTDIR=$(BASE_DIR) $(BINDIR)/$(EXE) --kl $(addprefix $(KLSRCDIR)/, $(KL_SRCS)) --output-dir $(EBINDIR)
+	mkdir -p src_gen
+	SHEN_ERL_ROOTDIR=$(BASE_DIR) $(BINDIR)/$(EXE) --kl $(addprefix $(KLSRCDIR)/, $(KL_SRCS)) --output-dir $(EBINDIR) --srcgen-dir src_gen
 
 ## Tests
 test/shen: ShenOSKernel-$(SHENVERSION)

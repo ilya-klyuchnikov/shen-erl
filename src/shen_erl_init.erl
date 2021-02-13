@@ -74,6 +74,8 @@ parse_opts(Args) ->
 
 parse_opts(["--output-dir", OutputDir | Rest], {Files, Opts}) ->
   parse_opts(Rest, {Files, [{output_dir, OutputDir} | Opts]});
+parse_opts(["--srcgen-dir", SrcgenDir | Rest], {Files, Opts}) ->
+  parse_opts(Rest, {Files, [{srcgen_dir, SrcgenDir} | Opts]});
 parse_opts([Filename | Rest], {Files, Opts}) ->
   parse_opts(Rest, {[Filename | Files], Opts});
 parse_opts([], {Files, Opts}) ->

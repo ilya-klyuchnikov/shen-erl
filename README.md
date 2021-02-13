@@ -4,8 +4,15 @@ Erlang port of the Shen programming language.
 
 ## Building
 
-For creating the `shen-erl` executable you first need to have Erlang
-20.0.2 or superior, with the `erl` binary accessible. Then just run `make`.
+
+```
+make kl
+make lexer
+make parser
+make
+make shen-kl
+make shen-tests
+```
 
 ## Installation
 

@@ -23,10 +23,8 @@ TODO
 For instructions on how to use the shen-erl command, run
 
 ```
-SHEN_ERL_ROOTDIR=. ./bin/shen-erl --help
+./bin/shen-erl --help
 ```
-
-where `SHEN_ERL_ROOTDIR` is the directory where the `ebin` directory is found.
 
 ## Erlang tests
 

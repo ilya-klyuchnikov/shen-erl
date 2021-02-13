@@ -15,26 +15,16 @@ int main(int argc, char **argv)
 {
   char **Eargv = NULL;
   int Eargc = 0;
-  char* rootdir;
-  char* path;
   char* arg;
   int i = 1;
   int eval = 0;
-
-  rootdir = getenv("SHEN_ERL_ROOTDIR");
-
-  if (rootdir == NULL) {
-    error("SHEN_ERL_ROOTDIR environment variable is not set");
-  }
-  path = malloc(strlen(rootdir) + 6);
-  sprintf(path, "%s/ebin", rootdir);
 
   Eargv = (char **)malloc(sizeof(*argv) * (argc + 16));
   Eargc = 0;
   PUSH(PROGNAME);			/* The program we are going to run */
 
   PUSH("-pa");
-  PUSH(path);
+  PUSH("./ebin");
 
   while (i < argc) {
     arg = argv[i];
